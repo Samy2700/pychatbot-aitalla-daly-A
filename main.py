@@ -90,7 +90,10 @@ def score_idf(destination_directory):
                 texte = fichier.read()
                 mots_uniques = set(texte.split())
                 for mot in mots_uniques:
-                    mot_dans_documents[mot] = mot_dans_documents.get(mot, 0) + 1
+                    if mot in mot_dans_documents:
+                        mot_dans_documents[mot] += 1
+                    else:
+                        mot_dans_documents[mot] = 1
 
     idf_scores = {}
     for mot, nombre_docs in mot_dans_documents.items():
