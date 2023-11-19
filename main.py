@@ -1,4 +1,5 @@
 import os
+import math
 
 president_names = []
 speeches = os.listdir('speeches')
@@ -18,7 +19,6 @@ presidents = {
 
 for nom, prenom in presidents.items():
     print(f"Le prénom du président {nom} est {prenom}.")
-
 
 
 source_directory = "C:/Users/samya/PycharmProjects/pythonProject/speeches"
@@ -55,96 +55,50 @@ for filename in os.listdir(source_directory):
 
         print(f"Fichier modifié pour: {filename}")
 
-compteur = {}
-def compteur_mots(texte):
+
+def score_tf(texte):
+    compteur = {}
     mots = texte.split()
     for mot in mots:
         if mot in compteur:
             compteur[mot] += 1
         else:
             compteur[mot] = 1
-    return compteur_mots
-
+    return compteur
 
 for filename in os.listdir(destination_directory):
     if filename.endswith(".txt"):
         file_path = os.path.join(destination_directory, filename)
         with open(file_path, 'r') as file:
             text = file.read()
-        comptages = compteur_mots(text)
-        compteur[filename] = comptages
 
-print(compteur, end='')
+        comptage = score_tf(text)
+        print(f"Voici l'occurences de chaque mots dans '{filename}':")
+        for mot, occurence in comptage.items():
+            print(f"{mot}: {occurence}", end=", ")
+        print("\n")
+
+def score_idf(destination_directory):
+    nombre_documents = 0
+    mot_dans_documents = {}
+
+    for filename in os.listdir(destination_directory):
+        if filename.endswith(".txt"):
+            nombre_documents += 1
+            chemin_fichier = os.path.join(destination_directory, filename)
+            with open(chemin_fichier, 'r') as fichier:
+                texte = fichier.read()
+                mots_uniques = set(texte.split())
+                for mot in mots_uniques:
+                    mot_dans_documents[mot] = mot_dans_documents.get(mot, 0) + 1
+
+    idf_scores = {}
+    for mot, nombre_docs in mot_dans_documents.items():
+        idf_scores[mot] = math.log(nombre_documents / nombre_docs)
+
+    return idf_scores
+
+idf_resultats = score_idf(destination_directory)
+print(f"Voici le score idf pour chaque mot : {idf_resultats}", end=', ')
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def ponctuation(text):
-#     sans_ponctuation = ""
-#     for char in text:
-#         if char == "'" or char == "," or char == "." or char == ";" or char == "-":
-#             sans_ponctuation += " "
-#         else:
-#             sans_ponctuation += char
-#     return sans_ponctuation
-
-# for filename in os.listdir(source_directory):
-#     if filename.endswith(".txt"):
-#         source_file_path = os.path.join(source_directory, filename)
-#         destination_file_path = os.path.join(destination_directory, filename)
-#
-#         with open(source_file_path, 'r') as file:
-#             text = file.read()
-#
-#         texte_sans_ponctuation = ponctuation(text)
-#
-#         with open(destination_file_path, 'w') as file:
-#             file.write(texte_sans_ponctuation)
-#
-#         print(f"Fichier sans ponctuation pour: {filename}")
-
-# def verif_espace(text):
-#     espacecount = 0
-#     verif_ponctuation = ""
-#     for char in text:
-#         if espacecount == 1:
-#             verif_ponctuation += ""
-#             espacecount = 0
-#         elif char == " ":
-#             espacecount += 1
-#             verif_ponctuation += char
-#         else:
-#             verif_ponctuation += char
-#     return verif_ponctuation
-
-# for filename in os.listdir(source_directory):
-#     if filename.endswith(".txt"):
-#         source_file_path = os.path.join(source_directory, filename)
-#         destination_file_path = os.path.join(destination_directory, filename)
-#
-#         with open(source_file_path, 'r') as file:
-#             text = file.read()
-#
-#         texte_verif_ponctuation = verif_espace(text)
-#
-#         with open(destination_file_path, 'w') as file:
-#             file.write(texte_verif_ponctuation)
-#
-#         print(f"Fichier verifié sans ponctuation pour: {filename}")
