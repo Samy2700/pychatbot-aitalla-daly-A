@@ -249,7 +249,7 @@ def afficher_premier_president(mots_cles):
         print("Aucun président n'a abordé ces sujets.")
 
 
-
+def mots_communs_presidents:
 
 def affichage_menu():
         print("\nMenu des Options :")
