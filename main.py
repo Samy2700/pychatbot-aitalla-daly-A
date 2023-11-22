@@ -245,8 +245,6 @@ def afficher_premier_president(mots_cles):
     premier_president = premier_president_a_parler(mots_cles)
     if premier_president:
         print(f"Le premier président à parler du climat et/ou de l'écologie est {premier_president}.")
-    else:
-        print("Aucun président n'a abordé ces sujets.")
 
 
 def mots_communs_presidents:
