@@ -143,87 +143,93 @@ print(f"{'Mot':{largeur_mot}}" + en_tetes)
 
 for mot, scores in tf_idf.items():
     mot_matrice = f"{mot:<{largeur_mot}}"
-    scores_matrice = "|".join(f"{score:<{largeur_colonne}}" for score in scores)
+    scores_matrice = "|".join(f"{score:<{largeur_colonne}.2f}" for score in scores)
     print(mot_matrice + scores_matrice)
 
 print("\n")
 
 
+def mots_moins_importants(tf_idf):
+    mots_score_zero = []
 
-mots_score_zero = []
+    for mot, scores in tf_idf.items():
+        if all(score == 0 for score in scores):
+            mots_score_zero.append(mot)
 
-for mot, scores in tf_idf.items():
-    if all(score == 0 for score in scores):
-        mots_score_zero.append(mot)
-
-print("Mots les moins importants: ", end="")
-for mot in mots_score_zero:
-    print(mot, end="; ")
-print("\n")
-
-
-max_score = 0
-mots_max_score = []
-
-for mot, scores in tf_idf.items():
-    for score in scores:
-        if score > max_score:
-            max_score = score
-            mots_max_score = [mot]
-        elif score == max_score:
-            mots_max_score.append(mot)
-
-print("Mot avec le plus haut score TF-IDF:", mots_max_score, "Score:", max_score)
-print("\n")
-
-noms_fichiers_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
-mots_chiracs = {}
-
-for fichier in noms_fichiers_chirac:
-    chemin_fichier = os.path.join(destination_directory, fichier)
-    with open(chemin_fichier, 'r') as f:
-        texte = f.read()
-        comptage = score_tf(texte)
-        for mot, occurence in comptage.items():
-            mots_chiracs[mot] = mots_chiracs.get(mot,0) + occurence
-
-mots_plus_repete = None
-occurence_max = 0
-
-for mot, occurence in mots_chiracs.items():
-    if occurence > occurence_max:
-        mots_plus_repete = mot
-        occurence_max = occurence
+    print("Mots les moins importants: ", end="")
+    for mot in mots_score_zero:
+        print(mot, end="; ")
+    print("\n")
 
 
-print("Le mot le plus répété par Chirac est:", mots_plus_repete)
-print("\n")
 
-def occurences_mot(chemin_fichier, mot):
-    with open(chemin_fichier, 'r') as fichier:
-        contenu = fichier.read().lower()
-        mots = contenu.split()
-        return mots.count(mot)
+def mot_plus_haut_score(tf_idf):
+    max_score = 0
+    mots_max_score = []
 
-mot_a_chercher = "nation"
-max_occurrences = 0
-president_occurrences = ""
+    for mot, scores in tf_idf.items():
+        for score in scores:
+            if score > max_score:
+                max_score = score
+                mots_max_score = [mot]
+            elif score == max_score:
+                mots_max_score.append(mot)
 
-for fichier in os.listdir(destination_directory):
-    if fichier.endswith(".txt"):
+    print("Mot avec le plus haut score TF-IDF:", mots_max_score, "Score:", max_score)
+    print("\n")
+
+
+def mot_chirac(textes_chirac):
+    mots_chirac = {}
+
+    for fichier in textes_chirac:
         chemin_fichier = os.path.join(destination_directory, fichier)
-        occurrences = occurences_mot(chemin_fichier, mot_a_chercher)
-        if occurrences > max_occurrences:
-            max_occurrences = occurrences
-            nom_fichier = os.path.splitext(fichier)[0]
-            president_occurrences = nom_fichier.split("_")[1]
+        with open(chemin_fichier, 'r') as f:
+            texte = f.read()
+            comptage = score_tf(texte)
+            for mot, occurence in comptage.items():
+                mots_chirac[mot] = mots_chirac.get(mot,0) + occurence
 
-if max_occurrences > 0:
-    print(f"Le président ayant le plus mentionné le mot 'nation' est {president_occurrences} avec {max_occurrences} occurrences.")
+    mots_plus_repete = None
+    occurence_max = 0
 
-print("\n")
+    for mot, occurence in mots_chirac.items():
+        if occurence > occurence_max:
+            mots_plus_repete = mot
+            occurence_max = occurence
 
-def premier_president_a_parler(destination_directory, mots_cles):
+
+    print("Le mot le plus répété par Chirac est:", mots_plus_repete)
+    print("\n")
+
+
+
+
+def occurences_nation(destination_directory, mot_a_chercher):
+    max_occurrences = 0
+    president_occurrences = ""
+
+    for fichier in os.listdir(destination_directory):
+        if fichier.endswith(".txt"):
+            chemin_fichier = os.path.join(destination_directory, fichier)
+            with open(chemin_fichier, 'r') as f:
+                contenu = f.read()
+                mots = contenu.split()
+                occurrences = mots.count(mot_a_chercher)
+
+                if occurrences > max_occurrences:
+                    max_occurrences = occurrences
+                    nom_fichier = os.path.splitext(f.name)[0]
+                    president_occurrences = nom_fichier.split("_")[1]
+
+    if max_occurrences > 0:
+        print(f"Le président ayant le plus mentionné le mot 'nation' est {president_occurrences} avec {max_occurrences} occurrences.")
+
+        print("\n")
+
+
+
+def premier_president_a_parler(mots_cles):
     for fichier in os.listdir(destination_directory):
         if fichier.endswith(".txt"):
             chemin_fichier = os.path.join(destination_directory, fichier)
@@ -231,28 +237,48 @@ def premier_president_a_parler(destination_directory, mots_cles):
                 contenu = f.read()
                 for mot_cle in mots_cles:
                     if mot_cle in contenu:
-                        return fichier.split("_")[1]
+                        nom_fichier = os.path.splitext(fichier)[0]
+                        return nom_fichier.split("_")[1]
 
-mots_cles = ["climat", "écologie"]
-premier_president = premier_president_a_parler(destination_directory, mots_cles)
 
-if premier_president:
-    print(f"Le premier président à parler du climat et/ou de l'écologie est {premier_president}.")
-print("\n")
+def afficher_premier_president(mots_cles):
+    premier_president = premier_president_a_parler(mots_cles)
+    if premier_president:
+        print(f"Le premier président à parler du climat et/ou de l'écologie est {premier_president}.")
+    else:
+        print("Aucun président n'a abordé ces sujets.")
 
-ensembles_mots = []
 
-mots_moins_importants = set()
-for fichier in os.listdir(destination_directory):
-    if fichier.endswith(".txt"):
-        chemin_fichier = os.path.join(destination_directory, fichier)
-        with open(chemin_fichier, 'r') as f:
-            contenu = f.read()
-            mots = set(contenu.split())
-            mots = mots - mots_moins_importants
-            ensembles_mots.append(mots)
 
-mots_communs = set.intersection(*ensembles_mots)
 
-print("Mots évoqués par tous les présidents :", mots_communs)
+def affichage_menu():
+        print("\nMenu des Options :")
+        print("1. Afficher les mots les moins importants")
+        print("2. Afficher le mot avec le score TD-IDF le plus élevé")
+        print("3. Afficher le mot le plus répété par Chirac")
+        print("4. Afficher le président qui parle le plus de la 'Nation'")
+        print("5. Afficher le premier président à parler du climat/écologie")
+        print("6. Afficher les mots évoqués par tous les présidents")
+        print("7. Quitter")
+        choix = input("Entrez votre choix : ")
+
+
+        if choix == '1':
+            mots_moins_importants(tf_idf)
+        elif choix == '2':
+            mot_plus_haut_score(tf_idf)
+        elif choix == '3':
+            textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
+            mot_chirac(textes_chirac)
+        elif choix == '4':
+            mot_a_chercher = "nation"
+            occurences_nation(destination_directory,mot_a_chercher)
+        elif choix == '5':
+            mots_cles = ["climat", "écologie"]
+            afficher_premier_president(mots_cles)
+
+
+
+affichage_menu()
+
 
