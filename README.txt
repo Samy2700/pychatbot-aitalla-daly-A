@@ -3,7 +3,7 @@ Ce projet consiste à créer un mini chatbot en Python, utilisant la méthode TF
 
 Membres du groupe :
 - Samy AIT ALLA
-- Anis Daly
+- Anis DALY
 
 Notice d'Utilisation :
 - Bibliothèques Python : math, os
