@@ -357,8 +357,6 @@ def affichage_menu():
             mots_cles = ["climat", "écologie"]
             afficher_premier_president(mots_cles)
         elif choix == '7':
-            mots_communs_presidents(destination_directory, mots_moins_importants)
-        elif choix == '8':
             # Quitter le programme
             quit(affichage_menu())
 
