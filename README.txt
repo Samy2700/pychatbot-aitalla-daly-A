@@ -16,9 +16,9 @@ Dépendances à installer :
 - Installation de python (préférablement la version la plus récente)
 
 Liste des bugs connus :
-- Problèmes de chemins de fichiers : Les utilisateurs peuvent rencontrer des problèmes concernant les chemins de dossier s'ils ne sont pqs correctlent configurés ou s'ils ne sont pas compatibles avec leur systéme d'eploitation
+- Problèmes de chemins de fichiers : Les utilisateurs peuvent rencontrer des problèmes concernant les chemins de dossier s'ils ne sont pas correctement configurés ou s'ils ne sont pas compatibles avec leur système d'exploitation
 - Erreurs de Compatibilité de Version Python :
 
 Solution :
-- Vérifier et ajuster manuellement les chemins avant le lancement du programma
+- Vérifier et ajuster manuellement les chemins avant le lancement du programme
 - Télécharger la version la plus récente de Python
