@@ -9,6 +9,18 @@ Lien Github :
 https://github.com/Samy2700/pychatbot-aitalla-daly-A/blob/master/main.py
 
 Fonctionnalités principale:
+texte_modifié
+score_tf
+score_idf
+matrice_tf_idf
+transposer_matrice
+mots_moins_importants
+mot_plus_haut_score
+mot_chirac
+occurences_nation
+premier_president_a_parler
+afficher_premier_president
+affichage_menu
 
 Notice d'Utilisation :
 - Bibliothèques Python : math, os
