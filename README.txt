@@ -5,6 +5,11 @@ Membres du groupe :
 - Samy AIT ALLA
 - Anis DALY
 
+Lien Github : 
+https://github.com/Samy2700/pychatbot-aitalla-daly-A/blob/master/main.py
+
+Fonctionnalités principale:
+
 Notice d'Utilisation :
 - Bibliothèques Python : math, os
 - Configurez les chemins globaux dans main.py à savoir:
@@ -22,3 +27,5 @@ Liste des bugs connus :
 Solution :
 - Vérifier et ajuster manuellement les chemins avant le lancement du programme
 - Télécharger la version la plus récente de Python
+
+
