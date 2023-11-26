@@ -171,7 +171,7 @@ def transposer_matrice(tf_idf_matrice, fichiers):
     # Fonction pour transposer la matrice TF-IDF
     transposée = []
     for i in range(len(fichiers)):
-        # Créer une colonne pour chaque fichier
+        # Créer une ligne de la matrice transposée pour chaque document
         ligne = [tf_idf_matrice[mot][i] for mot in tf_idf_matrice]
         transposée.append(ligne)
 
@@ -204,7 +204,7 @@ def mots_moins_importants(tf_idf):
     # Parcourir chaque mot et ses scores dans la matrice TF-IDF
     for mot, scores in tf_idf.items():
         # Vérifier si le score est 0 dans tous les documents
-        if all(score == math.log(2) for score in scores):
+        if all(score == 0 for score in scores):
             mots_score_zero.append(mot)
 
     # Affichage des mots les moins importants
