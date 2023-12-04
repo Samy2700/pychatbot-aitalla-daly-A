@@ -335,6 +335,8 @@ def mot_evoques_president(tf_idf):
             if mot in #(dictionnaire avec les noms des présidents pour vérifier que tous les présidents l'ont dit):
                 mot_evoques_presidents.append(mot)
 
+def token_questions(question):
+
 def affichage_menu():
         # Affichage des options du menu principal
         print("\nMenu des Options :")
