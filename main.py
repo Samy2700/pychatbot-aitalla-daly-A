@@ -326,6 +326,14 @@ def mots_communs_presidents(destination_directory):
     # Afficher le résulat
     print("Hormis les mots non importants, les mots communs sont : ", mots_communs)
 
+def mot_evoques_president(tf_idf):
+
+    mot_evoques_presidents = []
+
+    for mot, scores in tf_idf.items():
+        if all(score != 0 for score in scores):
+            if mot in #(dictionnaire avec les noms des présidents pour vérifier que tous les présidents l'ont dit):
+                mot_evoques_presidents.append(mot)
 
 def affichage_menu():
         # Affichage des options du menu principal
