@@ -348,9 +348,9 @@ def traiter_question(question_utilisateur):
             question += char
 
     # Séparer la chaîne de caractères traitée en mots
-    question = question.split()
+    question_traitee = question.split()
 
-    return question
+    return question_traitee
 
 
 #Traiter la question
@@ -358,6 +358,15 @@ question_traitee = traiter_question(question_utilisateur)
 
 #Afficher la question traitée
 print("Question traitée :", question_traitee)
+
+def intersection_question_corpus(tf_idf):
+    motquestiondanscorpus = []
+    for motquestions in question_traitee:
+        for mot, score in tf_idf.items():
+            if mot == motquestions:
+                motquestiondanscorpus.append(motquestions)
+    return motquestiondanscorpus
+
 def affichage_menu():
         # Affichage des options du menu principal
         print("\nMenu des Options :")
