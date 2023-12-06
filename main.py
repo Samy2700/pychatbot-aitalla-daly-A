@@ -326,17 +326,38 @@ def mots_communs_presidents(destination_directory):
     # Afficher le résulat
     print("Hormis les mots non importants, les mots communs sont : ", mots_communs)
 
-def mot_evoques_president(tf_idf):
+#Demander une question à l'utilisateur
+question_utilisateur = input("Veuillez entrer votre question : ")
+def traiter_question(question_utilisateur):
+    question = ""
+    for char in questionutilisateur:
+        # Convertir les majuscules en minuscules
+        if ord("A") <= ord(char) <= ord("Z"):
+            question += chr(ord(char) + ord("a") - ord("A"))
+        # Ignorer les virgules, points, points-virgules et guillemets
+        elif char in [",", ".", ";", '"']:
+            question += ""
+        # Remplacer les tirets et les underscores par des espaces
+        elif char in ["-", ""]:
+            question += " "
+        # Remplacer les apostrophes par "e "
+        elif char == "'":
+            question += "e "
+        # Conserver les autres caractères
+        else:
+            question += char
 
-    mot_evoques_presidents = []
+    # Séparer la chaîne de caractères traitée en mots
+    question = question.split()
 
-    for mot, scores in tf_idf.items():
-        if all(score != 0 for score in scores):
-            if mot in #(dictionnaire avec les noms des présidents pour vérifier que tous les présidents l'ont dit):
-                mot_evoques_presidents.append(mot)
+    return question
 
-def token_questions(question):
 
+#Traiter la question
+question_traitee = traiter_question(question_utilisateur)
+
+#Afficher la question traitée
+print("Question traitée :", question_traitee)
 def affichage_menu():
         # Affichage des options du menu principal
         print("\nMenu des Options :")
@@ -389,5 +410,3 @@ def affichage_menu():
 
 # Appeler la fonction affichage_menu pour démarrer le programme
 affichage_menu()
-
-
