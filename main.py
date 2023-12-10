@@ -1,3 +1,4 @@
+# Partie 1
 import os
 import math
 
@@ -45,7 +46,7 @@ def texte_modifié(texte):
         if ord("A") <= ord(char) <= ord("Z"):
             texte_miniscule += chr(ord(char) + ord("a")-ord("A"))
         # Ignorer les virgules, points, points-virgules et guillemets
-        elif char == "," or char == "." or char == ";" or char == '"':
+        elif char == "," or char == "." or char == ";" or char == '"' or char == "?" or char == "!":
             texte_miniscule += ""
         # Remplacer les tirets par des espaces
         elif char == "-" or char == "_" :
@@ -137,7 +138,7 @@ def score_idf(destination_directory):
     # Calculer le score IDF pour chaque mot
     for mot, nombres_docs in mots_dans_documents.items():
         # Utiliser la formule IDF
-        idf_scores[mot] = math.log((nombres_documents / nombres_docs) + 1)
+        idf_scores[mot] = math.log10((nombres_documents / nombres_docs))
 
     return idf_scores
 
@@ -145,6 +146,8 @@ def score_idf(destination_directory):
 idf_resultats = score_idf(destination_directory)
 print(f"Voici le score idf pour chaque mot : {idf_resultats}", end=', ')
 print("\n")
+
+
 
 def matrice_tf_idf(destination_directory):
     # Fonction pour créer une matrice TF-IDF
@@ -167,32 +170,35 @@ def matrice_tf_idf(destination_directory):
 
     return tf_idf_matrice, fichiers
 
+
 def transposer_matrice(tf_idf_matrice, fichiers):
     # Fonction pour transposer la matrice TF-IDF
-    transposée = []
+    transposee = []
     for i in range(len(fichiers)):
-        # Créer une colonne pour chaque fichier
+        # Créer une ligne pour chaque fichier
         ligne = [tf_idf_matrice[mot][i] for mot in tf_idf_matrice]
-        transposée.append(ligne)
+        transposee.append(ligne)
 
-    return transposée
+    return transposee
 
 # Appel de la fonction pour créer la matrice TF-IDF
 tf_idf, fichiers = matrice_tf_idf(destination_directory)
+matrice_transposee = transposer_matrice(tf_idf, fichiers)
 
-# Affichage de la matrice TF-IDF
-largeur_mot = 30
-largeur_colonne = 40
+# Affichage de la matrice TF-IDF transposée
+largeur_mot = 35
 
-# Créer l'en-tête avec les noms des fichiers
-en_tetes = "|".join(f"{nom_fichier:{largeur_colonne}}" for nom_fichier in fichiers)
-print(f"{'Mot':{largeur_mot}}" + en_tetes)
+# Créer l'en-tête avec les mots
+en_tetes = "|".join(f"{mot:{largeur_mot}}" for mot in tf_idf.keys())
+print(f"{'Fichier: /   Mot : ':{largeur_mot}}" + en_tetes)
 
-# Afficher les scores TF-IDF pour chaque mot
-for mot, scores in tf_idf.items():
-    mot_matrice = f"{mot:<{largeur_mot}}"
-    scores_matrice = "|".join(f"{score:<{largeur_colonne}.2f}" for score in scores)
-    print(mot_matrice + scores_matrice)
+# Afficher les scores TF-IDF pour chaque fichier
+index_fichier = 0
+while index_fichier < len(fichiers):
+    fichier = fichiers[index_fichier]
+    ligne = f"{fichier:<{largeur_mot}}" + "|".join(f"{score:<{largeur_mot}.2f}" for score in matrice_transposee[index_fichier])
+    print(ligne)
+    index_fichier += 1
 
 print("\n")
 
@@ -204,7 +210,7 @@ def mots_moins_importants(tf_idf):
     # Parcourir chaque mot et ses scores dans la matrice TF-IDF
     for mot, scores in tf_idf.items():
         # Vérifier si le score est 0 dans tous les documents
-        if all(score == math.log(2) for score in scores):
+        if all(score == 0 for score in scores):
             mots_score_zero.append(mot)
 
     # Affichage des mots les moins importants
@@ -232,8 +238,12 @@ def mot_plus_haut_score(tf_idf):
     print("\n")
 
 
-def mot_chirac(textes_chirac):
-    # Fonction qui trouve le mot le plus répété par Chirac
+def mot_chirac(destination_directory,textes_chirac):
+    # Fonction qui trouve le mot le plus répété par Chirac hormis les mots non importants
+    mots_non_importants = set(mot for mot, scores in tf_idf.items() if all(score == 0 for score in scores))
+    if mots_non_importants is None:
+        print("Erreur: la matrice TF-IDF est invalide")
+        return
     mots_chirac = {}
 
     # Parcourir les textes associés à Chirac
@@ -244,7 +254,8 @@ def mot_chirac(textes_chirac):
             # Calculer la fréquence de chaque mot
             comptage = score_tf(texte)
             for mot, occurence in comptage.items():
-                mots_chirac[mot] = mots_chirac.get(mot,0) + occurence
+                if mot not in mots_non_importants:
+                    mots_chirac[mot] = mots_chirac.get(mot,0) + occurence
 
     mots_plus_repete = None
     occurence_max = 0
@@ -256,11 +267,8 @@ def mot_chirac(textes_chirac):
             occurence_max = occurence
 
     # Affichage du mot le plus répété par Chirac
-
     print("Le mot le plus répété par Chirac est:", mots_plus_repete)
     print("\n")
-
-
 
 
 def occurences_nation(destination_directory, mot_a_chercher):
@@ -294,7 +302,7 @@ def occurences_nation(destination_directory, mot_a_chercher):
 
 def premier_president_a_parler(mots_cles):
     # Fonction qui trouve quel président a parlé de l'écologie en premier
-    # Parcourir chaque fichier dans le répertoire des destination
+    # Parcourir chaque fichier dans le répertoire des destinations
     for fichier in os.listdir(destination_directory):
         if fichier.endswith(".txt"):
             chemin_fichier = os.path.join(destination_directory, fichier)
@@ -308,7 +316,6 @@ def premier_president_a_parler(mots_cles):
                         return nom_fichier.split("_")[1] # Retourner le nom du président
 
 
-
 def afficher_premier_president(mots_cles):
     # Appeler la fonction premier_president_a_parler pour obtenir le nom du premier président parlant des mots clés
     premier_president = premier_president_a_parler(mots_cles)
@@ -317,14 +324,115 @@ def afficher_premier_president(mots_cles):
     if premier_president:
         print(f"Le premier président à parler du climat et/ou de l'écologie est {premier_president}.")
 
-def mots_communs_presidents(destination_directory):
-    # Obtenir les scores IDF pour tous les mots
-    idf_scores = score_idf(destination_directory)
-    # Trouver les mots dont le score IDF est proche de log(2)
-    mots_communs = [mot for mot, score in idf_scores.items() if math.isclose(score, math.log(2))]
 
-    # Afficher le résulat
-    print("Hormis les mots non importants, les mots communs sont : ", mots_communs)
+def mots_communs_presidents(destination_directory, listes_textes_presidents, tf_idf):
+    mots_non_importants = set(mot for mot, scores in tf_idf.items() if all(score == 0 for score in scores))
+    ensembles_mots_presidents = []
+
+    # Créer des ensembles de mots pour chaque président
+    for textes_president in listes_textes_presidents:
+        ensemble_mots = set()
+        for fichier in textes_president:
+            chemin_fichier = os.path.join(destination_directory, fichier)
+            with open(chemin_fichier, 'r') as f:
+                texte = f.read()
+                mots = set(score_tf(texte).keys())
+                ensemble_mots = ensemble_mots.union(mots)
+
+        ensembles_mots_presidents.append(ensemble_mots)
+
+    # Trouver les mots communs à tous les présidents
+    mots_communs = set.intersection(*ensembles_mots_presidents)
+
+    # Exclure les mots non importants
+    mots_communs_important = mots_communs - mots_non_importants
+
+    print("Mots énoncés par tous les présidents (hors mots non importants) :", mots_communs_important)
+
+
+
+# Partie 2
+def traiter_question(question_utilisateur):
+    question = ""
+    for char in question_utilisateur:
+        # Convertir les majuscules en minuscules
+        if ord("A") <= ord(char) <= ord("Z"):
+            question += chr(ord(char) + ord("a") - ord("A"))
+        # Ignorer les virgules, points, points-virgules et guillemets
+        elif char in [",", ".", ";", '"', "?", "!"]:
+            question += ""
+        # Remplacer les tirets et les underscores par des espaces
+        elif char in ["-", "_"]:
+            question += " "
+        # Remplacer les apostrophes par "e "
+        elif char == "'":
+            question += "e "
+        # Conserver les autres caractères
+        else:
+            question += char
+
+    # Séparer la chaîne de caractères traitée en mots
+    question = question.split()
+
+    return question
+
+
+def intersection_question_corpus(tf_idf):
+    mot_question_dans_corpus = []
+    for mot_questions in question_traitee:
+        for mot, scores in tf_idf.items():
+            if mot == mot_questions:
+                mot_question_dans_corpus.append(mot_questions)
+
+    print("Les mots communs sont :", mot_question_dans_corpus)
+
+
+def calculer_tf_question(question_traitee):
+    tf_question = {}
+
+    for mot in question_traitee:
+        tf_question[mot] = (tf_question.get(mot, 0)) / (len(question_utilisateur))
+
+    print(len(question_traitee))
+    return tf_question
+
+
+
+def tf_idf_question(tf_question, idf_resultats):
+    tf_idf_question = {}
+
+    for mot in tf_question:
+        if mot in idf_resultats:
+            tf_idf_question[mot] = tf_question[mot] * idf_resultats[mot]
+        else:
+            tf_idf_question[mot] = 0
+
+        # Ajouter les mots du corpus qui ne sont pas présents dans la question
+        for mot in idf_resultats:
+            if mot not in tf_question:
+                tf_idf_question[mot] = 0
+
+
+    return tf_idf_question
+
+
+
+
+
+question_utilisateur = input("Veuillez entrer votre question : ")
+question_traitee = traiter_question(question_utilisateur)
+print("Question traitée :", question_traitee)
+
+intersection_question_corpus(tf_idf)
+
+tf_scores_question = calculer_tf_question(question_traitee)
+print("Les scores tf sont :", tf_scores_question)
+
+
+matrice_tf_idf_question = tf_idf_question(tf_scores_question, idf_resultats)
+print("Les scores tf-idf sont : ", matrice_tf_idf_question)
+print("\n")
+
 
 
 def affichage_menu():
@@ -357,7 +465,7 @@ def affichage_menu():
         elif choix == '4':
             # Afficher le mot le plus répété par Chirac dans les deux discours de Chirac
             textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
-            mot_chirac(textes_chirac)
+            mot_chirac(destination_directory,textes_chirac)
             affichage_menu()
         elif choix == '5':
             # Afficher le président qui a le plus mentionné "nation"
@@ -371,13 +479,13 @@ def affichage_menu():
             affichage_menu()
         elif choix == '7':
             # Afficher les mots communs des présidents
-            mots_communs_presidents(destination_directory)
-            affichage_menu()
+            textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
+            textes_mitterrand = ["Nomination_Mitterrand1.txt", "Nomination_Mitterrand2.txt"]
+            listes_textes_presidents = [textes_chirac, textes_mitterrand]
+            mots_communs_presidents(destination_directory,listes_textes_presidents,tf_idf)
         elif choix == '8':
             # Quitter le programme
             quit(affichage_menu())
 
 # Appeler la fonction affichage_menu pour démarrer le programme
 affichage_menu()
-
-
