@@ -306,26 +306,56 @@ def premier_president_a_parler(mots_cles):
 
 
 
-def mots_communs_presidents(destination_directory, listes_textes_presidents, tf_idf):
-    mots_non_importants = set(mot for mot, scores in tf_idf.items() if all(score == 0 for score in scores))
-    compteur_mots = {}
-    total_presidents = len(listes_textes_presidents)
 
-    for textes_president in listes_textes_presidents:
-        mots_uniques = set()
-        for fichier in textes_president:
-            chemin_fichier = os.path.join(destination_directory, fichier)
-            with open(chemin_fichier, 'r', encoding='utf-8') as f:
-                texte = f.read()
-                for mot in score_tf(texte).keys():
-                    mots_uniques.add(mot)
+def affichage_menu():
+        # Affichage des options du menu principal
+        print("\nMenu des Options :")
+        print("1. Quel est le nom du président choisi")
+        print("2. Afficher les mots les moins importants")
+        print("3. Afficher le mot avec le score TD-IDF le plus élevé")
+        print("4. Afficher le mot le plus répété par Chirac")
+        print("5. Afficher le président qui parle le plus de la 'Nation'")
+        print("6. Afficher le premier président à parler du climat/écologie")
+        print("7. Quitter")
 
-        for mot in mots_uniques:
-            compteur_mots[mot] = compteur_mots.get(mot, 0) + 1
+        # Demander à l'utilisateur de faire un choix
+        choix = input("Entrez votre choix : ")
 
-    mots_communs_important = {mot for mot, compte in compteur_mots.items() if compte == total_presidents and mot not in mots_non_importants}
+        # Exécuter l'action correspondante au choix de l'utilisateur
+        if choix == '1':
+            prenom_president()
+            affichage_menu()
+        elif choix == '2':
+            # Afficher les mots les moins importants du corpus
+            mots_moins_importants(tf_idf)
+            affichage_menu()
+        elif choix == '3':
+            # Afficher le mot avec le score TD-IDF le plus élevé
+            mot_plus_haut_score(tf_idf)
+            affichage_menu()
+        elif choix == '4':
+            # Afficher le mot le plus répété par Chirac dans les deux discours de Chirac
+            textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
+            mot_chirac(destination_directory, textes_chirac)
+            affichage_menu()
+        elif choix == '5':
+            # Afficher le président qui a le plus mentionné "nation"
+            mot_a_chercher = "nation"
+            occurences_nation(destination_directory, mot_a_chercher)
+            affichage_menu()
+        elif choix == '6':
+            # Afficher le premier président qui a parlé de ces mots cles
+            mots_cles = ["climat", "écologie"]
+            premier_president_a_parler(mots_cles)
+            affichage_menu()
+        elif choix == '7':
+            # Quitter le programme
+            quit(affichage_menu())
 
-    print("Mots énoncés par tous les présidents (hors mots non importants) :", mots_communs_important)
+
+# Appeler la fonction affichage_menu pour démarrer le programme
+affichage_menu()
+
 
 
 
@@ -623,57 +653,3 @@ reponse_personnalisee = personnaliser_reponse(phrase_reponse)
 
 print("Réponse générée :", reponse_personnalisee)
 
-def affichage_menu():
-        # Affichage des options du menu principal
-        print("\nMenu des Options :")
-        print("1. Quel est le nom du président choisi")
-        print("2. Afficher les mots les moins importants")
-        print("3. Afficher le mot avec le score TD-IDF le plus élevé")
-        print("4. Afficher le mot le plus répété par Chirac")
-        print("5. Afficher le président qui parle le plus de la 'Nation'")
-        print("6. Afficher le premier président à parler du climat/écologie")
-        print("7. Afficher les mots évoqués par tous les présidents")
-        print("8. Quitter")
-
-        # Demander à l'utilisateur de faire un choix
-        choix = input("Entrez votre choix : ")
-
-        # Exécuter l'action correspondante au choix de l'utilisateur
-        if choix == '1':
-            prenom_president()
-            affichage_menu()
-        elif choix == '2':
-            # Afficher les mots les moins importants du corpus
-            mots_moins_importants(tf_idf)
-            affichage_menu()
-        elif choix == '3':
-            # Afficher le mot avec le score TD-IDF le plus élevé
-            mot_plus_haut_score(tf_idf)
-            affichage_menu()
-        elif choix == '4':
-            # Afficher le mot le plus répété par Chirac dans les deux discours de Chirac
-            textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
-            mot_chirac(destination_directory,textes_chirac)
-            affichage_menu()
-        elif choix == '5':
-            # Afficher le président qui a le plus mentionné "nation"
-            mot_a_chercher = "nation"
-            occurences_nation(destination_directory,mot_a_chercher)
-            affichage_menu()
-        elif choix == '6':
-            # Afficher le premier président qui a parlé de ces mots cles
-            mots_cles = ["climat", "écologie"]
-            premier_president_a_parler(mots_cles)
-            affichage_menu()
-        elif choix == '7':
-            # Afficher les mots communs des présidents
-            textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
-            textes_mitterrand = ["Nomination_Mitterrand1.txt", "Nomination_Mitterrand2.txt"]
-            listes_textes_presidents = [textes_chirac, textes_mitterrand]
-            mots_communs_presidents(destination_directory,listes_textes_presidents,tf_idf)
-        elif choix == '8':
-            # Quitter le programme
-            quit(affichage_menu())
-
-# Appeler la fonction affichage_menu pour démarrer le programme
-affichage_menu()
