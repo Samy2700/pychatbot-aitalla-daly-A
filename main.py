@@ -1,6 +1,9 @@
 # Partie 1
 import os
 import math
+import random
+
+
 
 #Extraire les noms des présidents à partir des noms des fichiers texte fournis
 president_names = []
@@ -38,7 +41,7 @@ def prenom_president():
 source_directory = "C:/Users/samya/PycharmProjects/pythonProject/speeches"
 destination_directory = "C:/Users/samya/PycharmProjects/pythonProject/cleaned"
 
-def texte_modifié(texte):
+def texte_modifie(texte):
     # Fonction qui permet de convertir les textes donnés
     texte_miniscule = ""
     for char in texte:
@@ -72,7 +75,7 @@ for fichier in os.listdir(source_directory):
             texte = f.read()
 
         # Convertir le texte
-        texte_converti = texte_modifié(texte)
+        texte_converti = texte_modifie(texte)
 
         # Écrire le texte converti dans le fichier de destination
         with open(destination_chemin_fichier, 'w', encoding='utf-8') as f:
@@ -306,59 +309,6 @@ def premier_president_a_parler(mots_cles):
 
 
 
-
-def affichage_menu():
-        # Affichage des options du menu principal
-        print("\nMenu des Options :")
-        print("1. Quel est le nom du président choisi")
-        print("2. Afficher les mots les moins importants")
-        print("3. Afficher le mot avec le score TD-IDF le plus élevé")
-        print("4. Afficher le mot le plus répété par Chirac")
-        print("5. Afficher le président qui parle le plus de la 'Nation'")
-        print("6. Afficher le premier président à parler du climat/écologie")
-        print("7. Quitter")
-
-        # Demander à l'utilisateur de faire un choix
-        choix = input("Entrez votre choix : ")
-
-        # Exécuter l'action correspondante au choix de l'utilisateur
-        if choix == '1':
-            prenom_president()
-            affichage_menu()
-        elif choix == '2':
-            # Afficher les mots les moins importants du corpus
-            mots_moins_importants(tf_idf)
-            affichage_menu()
-        elif choix == '3':
-            # Afficher le mot avec le score TD-IDF le plus élevé
-            mot_plus_haut_score(tf_idf)
-            affichage_menu()
-        elif choix == '4':
-            # Afficher le mot le plus répété par Chirac dans les deux discours de Chirac
-            textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
-            mot_chirac(destination_directory, textes_chirac)
-            affichage_menu()
-        elif choix == '5':
-            # Afficher le président qui a le plus mentionné "nation"
-            mot_a_chercher = "nation"
-            occurences_nation(destination_directory, mot_a_chercher)
-            affichage_menu()
-        elif choix == '6':
-            # Afficher le premier président qui a parlé de ces mots cles
-            mots_cles = ["climat", "écologie"]
-            premier_president_a_parler(mots_cles)
-            affichage_menu()
-        elif choix == '7':
-            # Quitter le programme
-            quit(affichage_menu())
-
-
-# Appeler la fonction affichage_menu pour démarrer le programme
-affichage_menu()
-
-
-
-
 # Partie 2
 def traiter_question(question_utilisateur):
     question = ""
@@ -460,22 +410,35 @@ def afficher_matrice_tf_idf_question(tf_idf_question):
 
 
 def produit_scalaire(tf_idf_question, tf_idf, fichiers):
+    # Initialiser un dictionnaire pour stocker les résultats du produit scalaire
     resultats = {}
+
+    # Parcourir tous les fichiers
     for fichier in fichiers:
-        score = 0
+        score = 0  # Initialiser le score à zéro pour chaque fichier
         indice_fichier = fichiers.index(fichier)  # Obtenir l'indice du fichier actuel
+
+        # Parcourir tous les mots du vecteur TF-IDF de la question
         for mot in tf_idf_question:
-            score_tf_idf_question = tf_idf_question.get(mot, 0)
+            score_tf_idf_question = tf_idf_question.get(mot, 0)   # Score TF-IDF du mot dans la question
             # Accès au score TF-IDF du mot pour le fichier spécifique
             score_tf_idf_fichier = tf_idf.get(mot, [0] * len(fichiers))[indice_fichier]
+
+            # Calculer le produit scalaire pour le mot
             score += score_tf_idf_question * score_tf_idf_fichier
+
+        # Stocker le résultat du produit scalaire pour le fichier actuel
         resultats[fichier] = score
+
+    # Retourner le dictionnaire de résultats
     return resultats
 
 
 def calculer_norme_question(tf_idf_question):
+    # Vérifier si tous les mots de tf_idf_question existent dans tf_idf
     if mot not in tf_idf:
-        return 0
+        return 0   # Retourner 0 si au moins un mot n'est pas présent dans tf_idf
+
     # Initialiser la somme des carrés à 0
     somme_carres = 0
 
@@ -490,14 +453,21 @@ def calculer_norme_question(tf_idf_question):
 
 
 def calculer_norme_corpus(tf_idf):
+    # Vérifier si le mot est présent dans la matrice TF-IDF
     if mot not in tf_idf:
         return 0  # Le mot n'est pas dans la matrice TF-IDF
 
+    # Récupérer les scores TF-IDF pour le mot donné
     scores_tf_idf = tf_idf[mot]
+
+    # Initialiser la somme des carrés à 0
     somme_carres = 0
+
+    # Parcourir tous les scores TF-IDF et ajouter le carré de chaque score à la somme
     for score in scores_tf_idf:
         somme_carres = score ** 2
 
+    # Calculer la norme en prenant la racine carrée de la somme des carrés
     norme = math.sqrt(somme_carres)
 
     return norme
@@ -511,28 +481,37 @@ def calculer_similarite_cosinus(tf_idf_question, tf_idf, fichiers):
 
     # Calcul de la norme de la question
     norme_question = calculer_norme_question(tf_idf_question)
-    norme_fichier = calculer_norme_corpus(tf_idf)  # Calcul de la norme du fichier
+    # Calcul de la norme du fichier
+    norme_fichier = calculer_norme_corpus(tf_idf)
     # Stockage des similarités cosinus
     similarites = {}
 
     # Calcul de la similarité cosinus pour chaque fichier
     for fichier in fichiers:
+        # Vérifier que les normes ne sont pas nulles pour éviter une division par zéro
         if norme_fichier != 0 and norme_question != 0:
+            # Calcul de la similarité cosinus en utilisant la formule
             similarite = resultats_produit_scalaire[fichier] / (norme_fichier * norme_question)
         else:
-            similarite = 0
+            similarite = 0  # Si l'une des normes est nulle, la similarité est définie à 0
+
+        # Stockage de la similarité cosinus dans le dictionnaire
         similarites[fichier] = similarite
 
     return similarites
 
-def trouver_document_le_plus_pertinent(tf_idf_question, tf_idf_corpus, fichiers):
+def document_le_plus_pertinent(tf_idf_question, tf_idf_corpus, fichiers):
+    # Calculer les similarités cosinus entre la question et chaque document dans le corpus
     similarites = calculer_similarite_cosinus(tf_idf_question, tf_idf_corpus, fichiers)
 
     fichier_le_plus_pertinent = None
-    similarite_maximale = -1  # Initialiser à une valeur basse
+    similarite_maximale = -1   # Initialiser à une valeur basse pour la comparaison
 
+    # Parcourir chaque fichier et sa similarité respective
     for fichier, similarite in similarites.items():
+        # Vérifier si la similarité actuelle est plus élevée que la similarité maximale enregistrée
         if similarite > similarite_maximale:
+            # Mettre à jour le fichier le plus pertinent et la similarité maximale
             similarite_maximale = similarite
             fichier_le_plus_pertinent = fichier
 
@@ -541,18 +520,22 @@ def trouver_document_le_plus_pertinent(tf_idf_question, tf_idf_corpus, fichiers)
 
 
 def mot_avec_score_tfidf_le_plus_eleve(tf_idf_question):
-    mot_max = None
-    score_max = 0
+    mot_max = None  # Initialiser le mot avec le score TF-IDF le plus élevé
+    score_max = 0   # Initialiser le score TF-IDF maximal à une valeur basse
 
+    # Parcourir chaque mot et son score TF-IDF dans la question
     for mot, score in tf_idf_question.items():
+        # Vérifier si le score actuel est plus élevé que le score maximal enregistré
         if score > score_max:
+            # Mettre à jour le mot avec le score TF-IDF le plus élevé et le score maximal
             mot_max = mot
             score_max = score
 
     return mot_max
 
 
-def trouver_phrase_contenant_mot(source_directory, document, mot):
+def trouver_phrase(source_directory, document, mot):
+    # Construire le chemin complet du fichier
     chemin_fichier = os.path.join(source_directory, document)
     # Ouvrir et lire le fichier
     with open(chemin_fichier, 'r', encoding='utf-8') as fichier:
@@ -560,6 +543,7 @@ def trouver_phrase_contenant_mot(source_directory, document, mot):
 
     # Trouver la première occurrence du mot
     index_mot = contenu.find(mot)
+    # Vérifier si le mot n'est pas trouvé
     if index_mot == -1:
         return "Mot non trouvé dans le document."
 
@@ -573,17 +557,12 @@ def trouver_phrase_contenant_mot(source_directory, document, mot):
     return phrase
 
 
-
-
-
-import random
-
 def personnaliser_reponse(reponse_brute):
     # Votre dictionnaire de formules de début de réponse
     question_starters = {
         "Comment": "Après analyse, ",
         "Pourquoi": "Car, ",
-        "Peux-tu": "Oui, bien sûr! ",
+        "Peux-tu": "Oui, bien sûr, ",
         # Vous pouvez ajouter d'autres formules ici
     }
 
@@ -607,7 +586,9 @@ def personnaliser_reponse(reponse_brute):
 
 
 
+# Appel et affichages des fonctions après le traitement de la question
 question_utilisateur = input("Veuillez entrer votre question : ")
+print("\n")
 question_traitee = traiter_question(question_utilisateur)
 print("Question traitée :", question_traitee)
 
@@ -639,7 +620,7 @@ print("Norme du vecteur de la question :", norme_question)
 similarite = calculer_similarite_cosinus(tf_idf_question_matrice, tf_idf, fichiers)
 print("Similarité cosinus pour la question :", similarite)
 
-document_pertinent = trouver_document_le_plus_pertinent(tf_idf_question_matrice, tf_idf, fichiers)
+document_pertinent = document_le_plus_pertinent(tf_idf_question_matrice, tf_idf, fichiers)
 print("Document le plus pertinent pour la question :", document_pertinent)
 
 # Trouver le mot avec le score TF-IDF le plus élevé dans la question
@@ -647,9 +628,59 @@ mot_important = mot_avec_score_tfidf_le_plus_eleve(tf_idf_question_matrice)
 print("Mot le plus important dans la question :", mot_important)
 
 # Trouver la phrase contenant le mot dans le document pertinent
-phrase_reponse = trouver_phrase_contenant_mot(source_directory, document_pertinent, mot_important)
+phrase_reponse = trouver_phrase(source_directory, document_pertinent, mot_important)
+print("\n")
 
 reponse_personnalisee = personnaliser_reponse(phrase_reponse)
 
 print("Réponse générée :", reponse_personnalisee)
 
+
+def affichage_menu():
+    # Affichage des options du menu principal
+    print("\nMenu des Options :")
+    print("1. Quel est le nom du président choisi")
+    print("2. Afficher les mots les moins importants")
+    print("3. Afficher le mot avec le score TD-IDF le plus élevé")
+    print("4. Afficher le mot le plus répété par Chirac")
+    print("5. Afficher le président qui parle le plus de la 'Nation'")
+    print("6. Afficher le premier président à parler du climat/écologie")
+    print("7. Quitter")
+
+    # Demander à l'utilisateur de faire un choix
+    choix = input("Entrez votre choix : ")
+
+    # Exécuter l'action correspondante au choix de l'utilisateur
+    if choix == '1':
+        prenom_president()
+        affichage_menu()
+    elif choix == '2':
+        # Afficher les mots les moins importants du corpus
+        mots_moins_importants(tf_idf)
+        affichage_menu()
+    elif choix == '3':
+        # Afficher le mot avec le score TD-IDF le plus élevé
+        mot_plus_haut_score(tf_idf)
+        affichage_menu()
+    elif choix == '4':
+        # Afficher le mot le plus répété par Chirac dans les deux discours de Chirac
+        textes_chirac = ["Nomination_Chirac1.txt", "Nomination_Chirac2.txt"]
+        mot_chirac(destination_directory, textes_chirac)
+        affichage_menu()
+    elif choix == '5':
+        # Afficher le président qui a le plus mentionné "nation"
+        mot_a_chercher = "nation"
+        occurences_nation(destination_directory, mot_a_chercher)
+        affichage_menu()
+    elif choix == '6':
+        # Afficher le premier président qui a parlé de ces mots cles
+        mots_cles = ["climat", "écologie"]
+        premier_president_a_parler(mots_cles)
+        affichage_menu()
+    elif choix == '7':
+        # Quitter le programme
+        quit(affichage_menu())
+
+
+# Appeler la fonction affichage_menu pour démarrer le programme
+affichage_menu()

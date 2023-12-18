@@ -1,5 +1,7 @@
 Pycharm ChatBot
 Ce projet consiste à créer un mini chatbot en Python, utilisant la méthode TF-IDF (Term Frequency-Inverse Document Frequency) pour analyser et traiter des données dans un ensemble de documents.
+Dans ce programme, l'utilisateur doit saisir une question et attendre une réponse automatisée à l'aide d'un système de similarité cosinus.
+
 
 Membres du groupe :
 - Samy AIT ALLA
@@ -19,7 +21,20 @@ Fonctionnalités principale:
 - mot_chirac
 - occurences_nation
 - premier_president_a_parler
-- afficher_premier_president
+- traiter_question
+- intersection_question_corpus
+- score_tf_question
+- score_idf_question
+- matrice_tf_idf_question
+- afficher_matrice_tf_idf_question
+- produit_scalaire
+- calculer_norme_question
+- calculer_norme_corpus
+- calculer_similarite_cosinus
+- document_le_plus_pertinent
+- mot_avec_score_tfidf_le_plus_eleve
+- trouver_phrase
+- personnaliser_reponse
 - affichage_menu
 
 Notice d'Utilisation :
@@ -39,3 +54,6 @@ Liste des bugs connus :
 Solution :
 - Vérifier et ajuster manuellement les chemins avant le lancement du programme
 - Télécharger la version la plus récente de Python
+
+
+Le projet a été fait sur Pycharm et Git.
