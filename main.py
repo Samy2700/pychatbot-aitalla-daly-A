@@ -561,7 +561,7 @@ def personnaliser_reponse(reponse_brute):
     # Votre dictionnaire de formules de début de réponse
     question_starters = {
         "Comment": "Après analyse, ",
-        "Pourquoi": "Car, ",
+        "Pourquoi": "En réponse à votre question, ",
         "Peux-tu": "Oui, bien sûr, ",
         # Vous pouvez ajouter d'autres formules ici
     }
